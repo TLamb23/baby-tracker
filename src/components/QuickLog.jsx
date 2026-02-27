@@ -19,6 +19,9 @@ export default function QuickLog({ onLog }) {
         <button className="quick-btn quick-btn--poo" onClick={() => log('poo')}>
           💩 Poo
         </button>
+        <button className="quick-btn quick-btn--mixed" onClick={() => log('mixed')}>
+          💧💩 Mixed
+        </button>
       </div>
     </div>
   )

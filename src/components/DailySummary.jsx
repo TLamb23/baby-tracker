@@ -3,8 +3,8 @@ export default function DailySummary({ feedings }) {
   const formulaFeedings = feedings.filter(f => f.type === 'formula')
   const formulaOz = formulaFeedings.reduce((sum, f) => sum + (f.amount || 0), 0)
   const solidFeedings = feedings.filter(f => f.type === 'solid')
-  const peeCount = feedings.filter(f => f.type === 'pee').length
-  const pooCount = feedings.filter(f => f.type === 'poo').length
+  const peeCount = feedings.filter(f => f.type === 'pee' || f.type === 'mixed').length
+  const pooCount = feedings.filter(f => f.type === 'poo' || f.type === 'mixed').length
 
   const uniqueSolids = [...new Set(solidFeedings.map(f => f.food).filter(Boolean))]
   const totalMilk = breastCount + formulaFeedings.length

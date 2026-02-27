@@ -4,6 +4,7 @@ const ICONS = {
   solid: '🥣',
   pee: '💧',
   poo: '💩',
+  mixed: '💧💩',
 }
 
 const TYPE_LABELS = {
@@ -12,6 +13,7 @@ const TYPE_LABELS = {
   solid: 'Solid Food',
   pee: 'Pee',
   poo: 'Poo',
+  mixed: 'Mixed Diaper',
 }
 
 function formatTime(isoStr) {
