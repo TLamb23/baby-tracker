@@ -59,3 +59,12 @@ export async function getTheme() {
 export async function setTheme(theme) {
   return saveSettings({ theme })
 }
+
+export async function getBirthday() {
+  const s = await getSettings()
+  return s.birthday ?? null
+}
+
+export async function setBirthday(birthday) {
+  return saveSettings({ birthday })
+}

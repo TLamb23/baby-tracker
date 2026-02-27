@@ -1,4 +1,32 @@
-export default function Header({ currentDate, onPrevDay, onNextDay, sex, onSexChange, theme, onThemeToggle }) {
+import { useState } from 'react'
+
+function getAge(birthday) {
+  const [y, m, d] = birthday.split('-').map(Number)
+  const today = new Date()
+  let months = (today.getFullYear() - y) * 12 + (today.getMonth() - (m - 1))
+  if (today.getDate() < d) months--
+  months = Math.max(0, months)
+  // Count days within the current month only — never exceeds the month's length
+  const days = today.getDate() < d
+    ? today.getDate()          // days into current month before the birth day
+    : today.getDate() - d      // days since birth day in current month
+  return { months, days }
+}
+
+function parseDate(str) {
+  const match = str.match(/^(\d{1,2})\/(\d{1,2})\/(\d{4})$/)
+  if (!match) return null
+  const [, m, d, y] = match
+  const date = new Date(y, m - 1, d)
+  if (date.getMonth() !== Number(m) - 1) return null
+  return `${y}-${String(m).padStart(2, '0')}-${String(d).padStart(2, '0')}`
+}
+
+export default function Header({ currentDate, onPrevDay, onNextDay, sex, onSexChange, theme, onThemeToggle, birthday, onBirthdayChange }) {
+  const [editingBirthday, setEditingBirthday] = useState(false)
+  const [bdInput, setBdInput] = useState('')
+  const [bdError, setBdError] = useState(false)
+
   const today = new Date()
   today.setHours(0, 0, 0, 0)
   const current = new Date(currentDate)
@@ -18,6 +46,32 @@ export default function Header({ currentDate, onPrevDay, onNextDay, sex, onSexCh
     })
   }
 
+  const age = birthday ? getAge(birthday) : null
+
+  const startEditing = () => {
+    if (birthday) {
+      const [y, m, d] = birthday.split('-')
+      setBdInput(`${m}/${d}/${y}`)
+    } else {
+      setBdInput('')
+    }
+    setBdError(false)
+    setEditingBirthday(true)
+  }
+
+  const handleBirthdaySubmit = () => {
+    const parsed = parseDate(bdInput)
+    if (!parsed) { setBdError(true); return }
+    onBirthdayChange(parsed)
+    setEditingBirthday(false)
+    setBdError(false)
+  }
+
+  const handleBirthdayKeyDown = (e) => {
+    if (e.key === 'Enter') handleBirthdaySubmit()
+    if (e.key === 'Escape') setEditingBirthday(false)
+  }
+
   return (
     <header className="header">
       <div className="header-top">
@@ -31,6 +85,33 @@ export default function Header({ currentDate, onPrevDay, onNextDay, sex, onSexCh
           {theme === 'dark' ? '☀️' : '🌙'}
         </button>
       </div>
+
+      <div className="age-row">
+        {editingBirthday ? (
+          <div className="birthday-edit">
+            <input
+              type="text"
+              className={`birthday-input${bdError ? ' birthday-input--error' : ''}`}
+              value={bdInput}
+              onChange={e => { setBdInput(e.target.value); setBdError(false) }}
+              onKeyDown={handleBirthdayKeyDown}
+              placeholder="mm/dd/yyyy"
+              autoFocus
+            />
+            <button className="birthday-save-btn" onClick={handleBirthdaySubmit}>Save</button>
+            <button className="birthday-cancel-btn" onClick={() => setEditingBirthday(false)}>✕</button>
+          </div>
+        ) : age !== null ? (
+          <button className="age-display" onClick={startEditing} title="Change birthday">
+            🎂 {age.months} {age.months === 1 ? 'month' : 'months'}{age.days > 0 ? ` and ${age.days} ${age.days === 1 ? 'day' : 'days'}` : ''} old
+          </button>
+        ) : (
+          <button className="age-display age-display--empty" onClick={startEditing}>
+            + Set baby's birthday
+          </button>
+        )}
+      </div>
+
       <div className="date-nav">
         <button onClick={onPrevDay} aria-label="Previous day">←</button>
         <span className="date-label">{formatDate(currentDate)}</span>

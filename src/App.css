@@ -312,6 +312,11 @@ body {
   color: #7c3a00;
 }
 
+.quick-btn--mixed {
+  background: #f0fdf4;
+  color: #166534;
+}
+
 .app.dark .quick-btn--pee {
   background: rgba(254,249,195,0.12);
   color: #fde047;
@@ -320,6 +325,80 @@ body {
 .app.dark .quick-btn--poo {
   background: rgba(254,237,208,0.12);
   color: #fdba74;
+}
+
+.app.dark .quick-btn--mixed {
+  background: rgba(240,253,244,0.08);
+  color: #86efac;
+}
+
+/* Age / Birthday */
+.age-row {
+  margin-bottom: 10px;
+}
+
+.age-display {
+  background: rgba(255,255,255,0.2);
+  border: 1.5px solid rgba(255,255,255,0.35);
+  color: white;
+  border-radius: 20px;
+  padding: 4px 14px;
+  font-size: 0.85rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background 0.15s;
+}
+
+.age-display:hover {
+  background: rgba(255,255,255,0.3);
+}
+
+.age-display--empty {
+  opacity: 0.75;
+  font-size: 0.8rem;
+}
+
+.birthday-edit {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+}
+
+.birthday-input {
+  background: rgba(255,255,255,0.95);
+  border: 2px solid transparent;
+  border-radius: 8px;
+  padding: 5px 10px;
+  font-size: 0.9rem;
+  color: #1e293b;
+  width: 120px;
+  text-align: center;
+}
+
+.birthday-input--error {
+  border-color: #ef4444;
+}
+
+.birthday-save-btn {
+  background: white;
+  color: var(--primary-dark);
+  border: none;
+  border-radius: 8px;
+  padding: 5px 12px;
+  font-size: 0.85rem;
+  font-weight: 700;
+  cursor: pointer;
+}
+
+.birthday-cancel-btn {
+  background: rgba(255,255,255,0.2);
+  color: white;
+  border: none;
+  border-radius: 8px;
+  padding: 5px 8px;
+  font-size: 0.85rem;
+  cursor: pointer;
 }
 
 /* Add button */

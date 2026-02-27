@@ -5,7 +5,7 @@ import FeedingList from './components/FeedingList.jsx'
 import AddFeedingModal from './components/AddFeedingModal.jsx'
 import LastFed from './components/LastFed.jsx'
 import QuickLog from './components/QuickLog.jsx'
-import { getFeedingsForDate, addFeeding, deleteFeeding, getSex, setSex, getTheme, setTheme, getLastFeeding } from './utils/api.js'
+import { getFeedingsForDate, addFeeding, deleteFeeding, getSex, setSex, getTheme, setTheme, getLastFeeding, getBirthday, setBirthday } from './utils/api.js'
 import './App.css'
 
 function toDateStr(date) {
@@ -22,6 +22,7 @@ export default function App() {
   const [lastFeeding, setLastFeeding] = useState(null)
   const [sex, setSexState] = useState('girl')
   const [theme, setThemeState] = useState('light')
+  const [birthday, setBirthdayState] = useState(null)
 
   const dateStr = toDateStr(currentDate)
 
@@ -39,9 +40,10 @@ export default function App() {
   }, [refresh])
 
   useEffect(() => {
-    Promise.all([getSex(), getTheme()]).then(([s, t]) => {
+    Promise.all([getSex(), getTheme(), getBirthday()]).then(([s, t, b]) => {
       setSexState(s)
       setThemeState(t)
+      setBirthdayState(b)
       document.body.classList.toggle('dark', t === 'dark')
     })
   }, [])
@@ -49,6 +51,11 @@ export default function App() {
   const handleSexChange = async (val) => {
     await setSex(val)
     setSexState(val)
+  }
+
+  const handleBirthdayChange = async (val) => {
+    await setBirthday(val)
+    setBirthdayState(val)
   }
 
   const handleThemeToggle = async () => {
@@ -104,6 +111,8 @@ export default function App() {
         onSexChange={handleSexChange}
         theme={theme}
         onThemeToggle={handleThemeToggle}
+        birthday={birthday}
+        onBirthdayChange={handleBirthdayChange}
       />
       <main className="main">
         <LastFed lastFeeding={lastFeeding} />
