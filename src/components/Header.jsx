@@ -22,10 +22,12 @@ function parseDate(str) {
   return `${y}-${String(m).padStart(2, '0')}-${String(d).padStart(2, '0')}`
 }
 
-export default function Header({ currentDate, onPrevDay, onNextDay, sex, onSexChange, theme, onThemeToggle, birthday, onBirthdayChange }) {
+export default function Header({ currentDate, onPrevDay, onNextDay, sex, onSexChange, theme, onThemeToggle, birthday, onBirthdayChange, babyName, onBabyNameChange }) {
   const [editingBirthday, setEditingBirthday] = useState(false)
   const [bdInput, setBdInput] = useState('')
   const [bdError, setBdError] = useState(false)
+  const [editingName, setEditingName] = useState(false)
+  const [nameInput, setNameInput] = useState('')
 
   const today = new Date()
   today.setHours(0, 0, 0, 0)
@@ -72,6 +74,22 @@ export default function Header({ currentDate, onPrevDay, onNextDay, sex, onSexCh
     if (e.key === 'Escape') setEditingBirthday(false)
   }
 
+  const startEditingName = () => {
+    setNameInput(babyName || '')
+    setEditingName(true)
+  }
+
+  const handleNameSubmit = () => {
+    const trimmed = nameInput.trim()
+    if (trimmed) onBabyNameChange(trimmed)
+    setEditingName(false)
+  }
+
+  const handleNameKeyDown = (e) => {
+    if (e.key === 'Enter') handleNameSubmit()
+    if (e.key === 'Escape') setEditingName(false)
+  }
+
   return (
     <header className="header">
       <div className="header-top">
@@ -84,6 +102,33 @@ export default function Header({ currentDate, onPrevDay, onNextDay, sex, onSexCh
         >
           {theme === 'dark' ? '☀️' : '🌙'}
         </button>
+      </div>
+
+      <div className="name-row">
+        {editingName ? (
+          <div className="birthday-edit">
+            <input
+              type="text"
+              className="birthday-input"
+              value={nameInput}
+              onChange={e => setNameInput(e.target.value)}
+              onKeyDown={handleNameKeyDown}
+              placeholder="Baby's name"
+              maxLength={30}
+              autoFocus
+            />
+            <button className="birthday-save-btn" onClick={handleNameSubmit}>Save</button>
+            <button className="birthday-cancel-btn" onClick={() => setEditingName(false)}>✕</button>
+          </div>
+        ) : babyName ? (
+          <button className="baby-name-display" onClick={startEditingName} title="Change name">
+            {babyName}
+          </button>
+        ) : (
+          <button className="baby-name-display baby-name-display--empty" onClick={startEditingName}>
+            + Add baby's name
+          </button>
+        )}
       </div>
 
       <div className="age-row">

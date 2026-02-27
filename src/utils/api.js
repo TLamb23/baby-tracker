@@ -68,3 +68,12 @@ export async function getBirthday() {
 export async function setBirthday(birthday) {
   return saveSettings({ birthday })
 }
+
+export async function getBabyName() {
+  const s = await getSettings()
+  return s.babyName ?? null
+}
+
+export async function setBabyName(babyName) {
+  return saveSettings({ babyName })
+}
