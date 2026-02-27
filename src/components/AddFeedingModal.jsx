@@ -4,7 +4,12 @@ function toLocalISO(date, timeStr) {
   const [hours, minutes] = timeStr.split(':').map(Number)
   const d = new Date(date)
   d.setHours(hours, minutes, 0, 0)
-  return d.toISOString()
+  const y = d.getFullYear()
+  const mo = String(d.getMonth() + 1).padStart(2, '0')
+  const day = String(d.getDate()).padStart(2, '0')
+  const h = String(d.getHours()).padStart(2, '0')
+  const mi = String(d.getMinutes()).padStart(2, '0')
+  return `${y}-${mo}-${day}T${h}:${mi}:00`
 }
 
 function currentTimeStr() {
