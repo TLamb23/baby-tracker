@@ -5,7 +5,7 @@ import FeedingList from './components/FeedingList.jsx'
 import AddFeedingModal from './components/AddFeedingModal.jsx'
 import LastFed from './components/LastFed.jsx'
 import QuickLog from './components/QuickLog.jsx'
-import { getFeedingsForDate, addFeeding, deleteFeeding, getSex, setSex, getTheme, setTheme, getLastFeeding } from './utils/storage.js'
+import { getFeedingsForDate, addFeeding, deleteFeeding, getSex, setSex, getTheme, setTheme, getLastFeeding } from './utils/api.js'
 import './App.css'
 
 function toDateStr(date) {
@@ -15,29 +15,45 @@ function toDateStr(date) {
 export default function App() {
   const [currentDate, setCurrentDate] = useState(new Date())
   const [showModal, setShowModal] = useState(false)
-  const [refreshKey, setRefreshKey] = useState(0)
-  const [sex, setSexState] = useState(getSex)
-  const [theme, setThemeState] = useState(getTheme)
+  const [feedings, setFeedings] = useState([])
+  const [lastFeeding, setLastFeeding] = useState(null)
+  const [sex, setSexState] = useState('girl')
+  const [theme, setThemeState] = useState('light')
 
-  const handleSexChange = (val) => {
-    setSex(val)
+  const dateStr = toDateStr(currentDate)
+
+  const refresh = useCallback(async () => {
+    const [dayFeedings, last] = await Promise.all([
+      getFeedingsForDate(dateStr),
+      getLastFeeding(),
+    ])
+    setFeedings(dayFeedings)
+    setLastFeeding(last)
+  }, [dateStr])
+
+  useEffect(() => {
+    refresh()
+  }, [refresh])
+
+  useEffect(() => {
+    Promise.all([getSex(), getTheme()]).then(([s, t]) => {
+      setSexState(s)
+      setThemeState(t)
+      document.body.classList.toggle('dark', t === 'dark')
+    })
+  }, [])
+
+  const handleSexChange = async (val) => {
+    await setSex(val)
     setSexState(val)
   }
 
-  const handleThemeToggle = () => {
+  const handleThemeToggle = async () => {
     const next = theme === 'dark' ? 'light' : 'dark'
-    setTheme(next)
+    await setTheme(next)
     setThemeState(next)
     document.body.classList.toggle('dark', next === 'dark')
   }
-
-  useEffect(() => {
-    document.body.classList.toggle('dark', theme === 'dark')
-  }, [])
-
-  const dateStr = toDateStr(currentDate)
-  const feedings = getFeedingsForDate(dateStr)
-  const lastFeeding = getLastFeeding()
 
   const handlePrevDay = () => {
     setCurrentDate(d => {
@@ -55,16 +71,21 @@ export default function App() {
     })
   }
 
-  const handleSave = useCallback((entry) => {
-    addFeeding(entry)
-    setRefreshKey(k => k + 1)
+  const handleSave = useCallback(async (entry) => {
+    await addFeeding(entry)
+    await refresh()
     setShowModal(false)
-  }, [])
+  }, [refresh])
 
-  const handleDelete = useCallback((id) => {
-    deleteFeeding(id)
-    setRefreshKey(k => k + 1)
-  }, [])
+  const handleDelete = useCallback(async (id) => {
+    await deleteFeeding(id)
+    await refresh()
+  }, [refresh])
+
+  const handleQuickLog = useCallback(async (entry) => {
+    await addFeeding(entry)
+    await refresh()
+  }, [refresh])
 
   const sortedFeedings = [...feedings].sort(
     (a, b) => new Date(b.timestamp) - new Date(a.timestamp)
@@ -83,7 +104,7 @@ export default function App() {
       />
       <main className="main">
         <LastFed lastFeeding={lastFeeding} />
-        <QuickLog onLog={(entry) => { addFeeding(entry); setRefreshKey(k => k + 1) }} />
+        <QuickLog onLog={handleQuickLog} />
         <DailySummary feedings={feedings} />
         <button className="add-btn" onClick={() => setShowModal(true)}>
           + Log Feeding
