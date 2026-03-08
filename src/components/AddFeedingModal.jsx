@@ -146,7 +146,7 @@ function SolidForm({ time, setTime, onSave }) {
 }
 
 export default function AddFeedingModal({ currentDate, onSave, onClose }) {
-  const [tab, setTab] = useState('breast')
+  const [tab, setTab] = useState('formula')
   const [time, setTime] = useState(currentTimeStr())
 
   const handleSave = ({ type, time: timeStr, ...rest }) => {
