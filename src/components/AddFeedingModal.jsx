@@ -96,6 +96,7 @@ function FormulaForm({ time, setTime, onSave }) {
             checked={vitamins}
             onChange={e => setVitamins(e.target.checked)}
           />
+          <span className="checkbox-custom" />
           💊 Vitamins added
         </label>
       </div>
