@@ -1,9 +1,10 @@
 const BASE = 'https://api.lambert-hq.com'
+const API_KEY = 'a53523d804f72961534cac51e8c970d4ef3a6a5b66383ed4393dfef0633465bf'
 
 async function req(path, options = {}) {
   const res = await fetch(`${BASE}${path}`, {
-    headers: { 'Content-Type': 'application/json' },
     ...options,
+    headers: { 'Content-Type': 'application/json', 'x-api-key': API_KEY, ...(options.headers || {}) },
   })
   if (!res.ok) throw new Error(`API error ${res.status}`)
   return res.json()
