@@ -4,6 +4,20 @@
   padding: 0;
 }
 
+.app-loading,
+.app-error {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  min-height: 100dvh;
+  gap: 1rem;
+  padding: 2rem;
+  font-size: 1.1rem;
+  color: var(--text-muted);
+  text-align: center;
+}
+
 :root {
   --primary: #f9a8d4;
   --primary-dark: #ec4899;
@@ -841,4 +855,52 @@ body {
 
 .save-btn:hover {
   background: var(--primary-hover);
+}
+
+.solid-foods-manage {
+  margin-top: 14px;
+}
+
+.manage-foods-toggle {
+  background: none;
+  border: none;
+  color: var(--primary-dark);
+  font-size: 0.85rem;
+  cursor: pointer;
+  padding: 0;
+  text-decoration: underline;
+}
+
+.saved-foods-list {
+  list-style: none;
+  padding: 0;
+  margin: 10px 0 0;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.saved-foods-list li {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  background: var(--surface-alt, var(--surface));
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  padding: 7px 10px;
+  font-size: 0.9rem;
+}
+
+.saved-foods-list li button {
+  background: none;
+  border: none;
+  cursor: pointer;
+  color: var(--text-muted, #888);
+  font-size: 0.85rem;
+  padding: 0 2px;
+  line-height: 1;
+}
+
+.saved-foods-list li button:hover {
+  color: #ef4444;
 }

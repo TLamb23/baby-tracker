@@ -24,16 +24,25 @@ export default function App() {
   const [theme, setThemeState] = useState('light')
   const [birthday, setBirthdayState] = useState(null)
   const [babyName, setBabyNameState] = useState(null)
+  const [loading, setLoading] = useState(true)
+  const [error, setError] = useState(null)
 
   const dateStr = toDateStr(currentDate)
 
   const refresh = useCallback(async () => {
-    const [dayFeedings, last] = await Promise.all([
-      getFeedingsForDate(dateStr),
-      getLastFeeding(),
-    ])
-    setFeedings(dayFeedings)
-    setLastFeeding(last)
+    try {
+      const [dayFeedings, last] = await Promise.all([
+        getFeedingsForDate(dateStr),
+        getLastFeeding(),
+      ])
+      setFeedings(dayFeedings)
+      setLastFeeding(last)
+      setError(null)
+    } catch (err) {
+      setError('Unable to reach the server. Check your connection and try again.')
+    } finally {
+      setLoading(false)
+    }
   }, [dateStr])
 
   useEffect(() => {
@@ -41,13 +50,15 @@ export default function App() {
   }, [refresh])
 
   useEffect(() => {
-    Promise.all([getSex(), getTheme(), getBirthday(), getBabyName()]).then(([s, t, b, n]) => {
-      setSexState(s)
-      setThemeState(t)
-      setBirthdayState(b)
-      setBabyNameState(n)
-      document.body.classList.toggle('dark', t === 'dark')
-    })
+    Promise.all([getSex(), getTheme(), getBirthday(), getBabyName()])
+      .then(([s, t, b, n]) => {
+        setSexState(s)
+        setThemeState(t)
+        setBirthdayState(b)
+        setBabyNameState(n)
+        document.body.classList.toggle('dark', t === 'dark')
+      })
+      .catch(() => {})
   }, [])
 
   const handleSexChange = async (val) => {
@@ -107,6 +118,25 @@ export default function App() {
   const sortedFeedings = [...feedings].sort(
     (a, b) => new Date(b.timestamp) - new Date(a.timestamp)
   )
+
+  if (loading) {
+    return (
+      <div className={`app theme-${sex} ${theme === 'dark' ? 'dark' : ''}`}>
+        <div className="app-loading">Loading…</div>
+      </div>
+    )
+  }
+
+  if (error) {
+    return (
+      <div className={`app theme-${sex} ${theme === 'dark' ? 'dark' : ''}`}>
+        <div className="app-error">
+          <p>{error}</p>
+          <button className="add-btn" onClick={() => { setLoading(true); refresh() }}>Retry</button>
+        </div>
+      </div>
+    )
+  }
 
   return (
     <div className={`app theme-${sex} ${theme === 'dark' ? 'dark' : ''}`}>
